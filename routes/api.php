@@ -58,6 +58,8 @@ Route::middleware(['auth:sanctum', 'user-role:teacher'])->group(function () {
         Route::get('questions/{question}/answers', 'index');
         Route::post('questions/{question}/answers', 'store');
         Route::get('questions/{question}/answers/{answer}', 'show');
+        Route::patch('questions/{question}/answers/{answer}', 'update');
+        Route::delete('questions/{question}/answers/{answer}', 'destroy');
     });
 
 });

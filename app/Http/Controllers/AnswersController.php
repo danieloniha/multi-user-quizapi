@@ -54,6 +54,27 @@ class AnswersController extends Controller
         if(!$isAuthorized){
             return response()->json(['message' => 'You are not authorized to access this'], 403);
         }
-        
+        return new AnswerResource($answer);
+    }
+
+    public function update(Request $request, Question $question, Answer $answer){
+
+        $isAuthorized = Auth()->user->subjects()->where('id', $question->quiz->subject_id)->exists();
+
+        if(!$isAuthorized){
+            return response()->json(['message' => 'You are not authorized to access this'], 403);
+        }
+        $answer->update($request->all());
+        return new AnswerResource($answer);
+    }
+
+    public function destroy(Question $question, Answer $answer){
+
+        $isAuthorized = Auth()->user->subjects()->where('id', $question->quiz->subject_id)->exists();
+
+        if(!$isAuthorized){
+            return response()->json(['message' => 'You are not authorized to access this'], 403);
+        }
+        $answer->delete();
     }
 }
