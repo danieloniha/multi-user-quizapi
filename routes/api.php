@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnswersController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\QuestionsController;
@@ -51,6 +52,12 @@ Route::middleware(['auth:sanctum', 'user-role:teacher'])->group(function () {
         Route::get('quizzes/{quiz}/questions/{question}', 'show');
         Route::patch('quizzes/{quiz}/questions/{question}', 'update');
         Route::delete('quizzes/{quiz}/questions/{question}', 'destroy');
+    });
+
+    Route::controller(AnswersController::class)->group(function (){
+        Route::get('questions/{question}/answers', 'index');
+        Route::post('questions/{question}/answers', 'store');
+        Route::get('questions/{question}/answers/{answer}', 'show');
     });
 
 });
