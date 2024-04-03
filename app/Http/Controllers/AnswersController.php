@@ -13,14 +13,15 @@ use Illuminate\Support\Facades\Auth;
 class AnswersController extends Controller
 {
     use HttpResponses;
-    
+
     public function index(Question $question)
     {
         //$questionId = Question::findOrFail($question);
+        $user = auth()->user();
 
-        $isAuthorized = Auth()->user->subjects()->where('id', $question->quiz->subject_id)->exists();
+        $isAuthorized = $user->subjects()->where('subjects.id', $question->quiz->subject_id)->exists();
 
-        if(!$isAuthorized){
+        if (!$isAuthorized) {
             return response()->json(['message' => 'You are not authorized to access this'], 403);
         }
 
@@ -29,11 +30,14 @@ class AnswersController extends Controller
         return AnswerResource::collection($answer);
     }
 
-    public function store(AnswerRequest $request, Question $question){
+    public function store(AnswerRequest $request, Question $question)
+    {
 
-        $isAuthorized = Auth()->user->subjects()->where('id', $question->quiz->subject_id)->exists();
+        $user = auth()->user();
 
-        if(!$isAuthorized){
+        $isAuthorized = $user->subjects()->where('subjects.id', $question->quiz->subject_id)->exists();
+
+        if (!$isAuthorized) {
             return response()->json(['message' => 'You are not authorized to access this'], 403);
         }
 
@@ -47,34 +51,57 @@ class AnswersController extends Controller
         return new AnswerResource($answer);
     }
 
-    public function show(Question $question, Answer $answer){
+    public function show(Question $question, Answer $answer)
+    {
 
-        $isAuthorized = Auth()->user->subjects()->where('id', $question->quiz->subject_id)->exists();
+        $user = auth()->user();
 
-        if(!$isAuthorized){
+        $isAuthorized = $user->subjects()->where('subjects.id', $question->quiz->subject_id)->exists();
+
+        if ($isAuthorized) {
+            if ($answer->question_id != $question->id) {
+                return response()->json(['message' => 'You are not authorized to access this answer'], 403);
+            }
+            return new AnswerResource($answer);
+        } else {
             return response()->json(['message' => 'You are not authorized to access this'], 403);
         }
-        return new AnswerResource($answer);
+        
     }
 
-    public function update(Request $request, Question $question, Answer $answer){
+    public function update(Request $request, Question $question, Answer $answer)
+    {
 
-        $isAuthorized = Auth()->user->subjects()->where('id', $question->quiz->subject_id)->exists();
+        $user = auth()->user();
 
-        if(!$isAuthorized){
+        $isAuthorized = $user->subjects()->where('subjects.id', $question->quiz->subject_id)->exists();
+
+        if ($isAuthorized) {
+            if ($answer->question_id != $question->id) {
+                return response()->json(['message' => 'You are not authorized to access this answer'], 403);
+            }
+            $answer->update($request->all());
+            return new AnswerResource($answer);
+        } else {
             return response()->json(['message' => 'You are not authorized to access this'], 403);
         }
-        $answer->update($request->all());
-        return new AnswerResource($answer);
     }
 
-    public function destroy(Question $question, Answer $answer){
+    public function destroy(Question $question, Answer $answer)
+    {
 
-        $isAuthorized = Auth()->user->subjects()->where('id', $question->quiz->subject_id)->exists();
+        $user = auth()->user();
 
-        if(!$isAuthorized){
+        $isAuthorized = $user->subjects()->where('subjects.id', $question->quiz->subject_id)->exists();
+
+        if ($isAuthorized) {
+            if ($answer->question_id != $question->id) {
+                return response()->json(['message' => 'You are not authorized to access this answer'], 403);
+            }
+            $answer->delete();
+        } else {
             return response()->json(['message' => 'You are not authorized to access this'], 403);
         }
-        $answer->delete();
+
     }
 }

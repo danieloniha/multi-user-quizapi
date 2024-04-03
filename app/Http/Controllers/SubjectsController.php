@@ -81,7 +81,7 @@ class SubjectsController extends Controller
      */
     public function update(Request $request, Subject $subject)
     {
-        if(!Auth::user()->subjects->contains($subject)){
+        if (!Auth::user()->subjects->contains($subject)) {
             return $this->error('', 'You are not authorized to make this request', 403);
         }
 
@@ -98,8 +98,24 @@ class SubjectsController extends Controller
         return $this->isNotAuthorized($subject) ? $this->isNotAuthorized($subject) : $subject->delete();
     }
 
-    private function isNotAuthorized($subject){
-        if(!Auth::user()->subjects->contains($subject)){
+    private function isNotAuthorized($subject)
+    {
+        if (!Auth::user()->subjects->contains($subject)) {
+            return $this->error('', 'You are not authorized to make this request', 403);
+        }
+    }
+
+
+    public function getStudentSubjects()
+    {
+        $user = auth()->user();
+        
+        // Ensure the user is a student
+        if ($user->role == 'student') {
+            $subjects = $user->subjects; // Assuming you've set up the many-to-many relationship
+            return SubjectResource::collection($subjects);
+            //return response()->json($subjects);
+        } else {
             return $this->error('', 'You are not authorized to make this request', 403);
         }
     }

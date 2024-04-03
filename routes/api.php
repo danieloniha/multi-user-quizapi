@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\QuestionsController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\Student\StudentAnswerController;
 use App\Http\Controllers\SubjectsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -65,4 +66,9 @@ Route::middleware(['auth:sanctum', 'user-role:teacher'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'user-role:student'])->group(function () {
+    Route::get('/subjects', [SubjectsController::class, 'getStudentSubjects']);
+    Route::get('subjects/{subject}/quiz', [QuizController::class , 'getQuizzesForSubject']);
+
+    Route::get('quizzes/{quiz}/questions/{question}/answers', [StudentAnswerController::class, 'index']);
+    Route::post('quizzes/{quiz}/questions/{question}/answers', [StudentAnswerController::class, 'store']);
 });

@@ -97,4 +97,22 @@ class QuizController extends Controller
             return response()->json(['message' => 'You are not authorized to access this'], 403);
         }
     }
+
+
+    public function getQuizzesForSubject(Subject $subject)
+{
+    $user = auth()->user();
+
+    // Ensure the user is a student and is enrolled in the subject
+    if ($user->role == 'student' && $user->subjects->contains('id', $subject->id)) {
+
+        $quizzes = Quiz::where('subject_id', $subject->id)->get();
+        return QuizResource::collection($quizzes);
+        //return response()->json($quizzes);
+
+    } else {
+        return response()->json(['message' => 'You are not authorized to view these quizzes.'], 403);
+    }
+}
+
 }
